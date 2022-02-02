@@ -20,7 +20,7 @@ Note that these API are not perfect and if you use a better one, please reach ou
 
 ''')
 
-data = pd.read_csv('cities1000.txt', sep='\t')
+data = pd.read_csv('https://raw.githubusercontent.com/antoineeripret/streamlit-local-keyword-generator/main/cities1000.txt', sep='\t')
 data.columns = [
                 'geonameid',
                 'name',
