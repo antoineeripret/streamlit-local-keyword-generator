@@ -4,6 +4,7 @@ import pandas as pd
 import requests
 import json
 from io import StringIO
+import ast
 
 def convert_df(df):
     return df.to_csv().encode('utf-8')
@@ -54,13 +55,18 @@ with st.expander('STEP 1: Create your local keywords'):
 
 with st.expander('STEP 2: Configure your extraction'):
     st.markdown('Use two letters ISO code (es,fr,de...). **Please check Keyword Surfer\'s or Semrush\'s documentation to check if your country is available.** Not all of them are. **You can indicate here a different country than what you have for STEP 1.** You can perfectly extract volumes for France for German cities for instance.')
-    source = st.selectbox('Source', ('Keyword Surfer (FREE)', 'Semrush (Paid)'))
-    country_api = st.text_input('Country')
+    source = st.selectbox('Source', ('Keyword Surfer (FREE)', 'Semrush (Paid)','Keywordseverywhere (Paid)'))
 
     st.write('If a keyword is not included in a database, volume returned will be 0. **Which doesn\'t mean that it has no search volume ;)**')
 
     if source == 'Semrush (Paid)':
         semrush_api_key = st.text_input('API')
+
+    if source == 'Keywordseverywhere (Paid)':
+        keywordseverywhere_api_key = st.text_input('API key')
+        country_api = st.selectbox('Country',['au','ca','in','za','uk','us'])
+    else:
+        country_api = st.text_input('Country')
 
 with st.expander('STEP 3: Extract Volume'):
     st.markdown('**You cannot launch this part of the tool without completing step 1 & 2 first!! Execution will fail.**')
@@ -122,6 +128,46 @@ with st.expander('STEP 3: Extract Volume'):
                     r = requests.get(url)
                     df = pd.read_csv(StringIO(r.text), sep=';')
                     results = pd.concat([results, df.rename({'Keyword':'keyword', 'Search Volume':'volume'}, axis=1)])
+                except:
+                    continue
+                status_bar.progress(i/len(chunks))
+            status_bar.progress(100)
+
+            
+            results = (
+                    pd.Series(kws)
+                    .to_frame()
+                    .rename({0:'keyword'},axis=1)
+                    .merge(results,on='keyword',how='left')
+                    .fillna(0)
+                    )
+
+            st.download_button(
+                        "Press to download your data",
+                        convert_df(results),
+                        "file.csv",
+                        "text/csv",
+                        key='download-csv'
+                    )
+
+        elif source == 'Keywordseverywhere (Paid)':
+            headers = {
+                'Accept': 'application/json',
+                'Authorization': 'Bearer {}'.format(keywordseverywhere_api_key)
+            }
+            status_bar = st.progress(0)
+            for i in range(len(chunks)):
+                chunk = chunks[i]
+                data = {
+                'country':country_api, 
+                'currency':'usd', 
+                'dataSource':'gkp', 
+                'kw[]':chunk
+                }
+                try:
+                    r = requests.post('https://api.keywordseverywhere.com/v1/get_keyword_data', headers=headers, data=data)
+                    for element in ast.literal_eval(r.content.decode('utf-8'))['data']:
+                        results.loc[len(results)] = [element['keyword'], element['vol']]
                 except:
                     continue
                 status_bar.progress(i/len(chunks))
