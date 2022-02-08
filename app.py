@@ -15,7 +15,7 @@ st.markdown(
 
 '''Local keyword generator done by [Antoine Eripret](https://twitter.com/antoineripret). You can report a bug or an issue in [Github](https://github.com/antoineeripret/streamlit-local-keyword-generator).
 
-You can generate keyword & get search volume from [Keyword Surfer](https://surferseo.com/keyword-surfer-extension/) or [Semrush API](https://www.semrush.com/api-analytics/). For the later, **an API key is required and you will spend 10 credits per keyword**. 
+You can generate keyword & get search volume from [Keyword Surfer](https://surferseo.com/keyword-surfer-extension/), [Semrush API](https://www.semrush.com/api-analytics/) or [Keywordseverywhere](https://keywordseverywhere.com/). For the later, **an API key is required and you will spend 10 credits per keyword**. 
 
 Note that these API are not perfect and if you use a better one, please reach out to me and let's talk to improve this tool :) 
 
