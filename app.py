@@ -15,7 +15,7 @@ st.markdown(
 
 '''Local keyword generator done by [Antoine Eripret](https://twitter.com/antoineripret). You can report a bug or an issue in [Github](https://github.com/antoineeripret/streamlit-local-keyword-generator).
 
-You can generate keyword & get search volume from [Keyword Surfer](https://surferseo.com/keyword-surfer-extension/), [Semrush API](https://www.semrush.com/api-analytics/) or [Keywordseverywhere](https://keywordseverywhere.com/). For the later, **an API key is required and you will spend 10 credits per keyword**. 
+You can generate keyword & get search volume from [Keyword Surfer](https://surferseo.com/keyword-surfer-extension/) or [Semrush API](https://www.semrush.com/api-analytics/). For the later, **an API key is required and you will spend 10 credits per keyword**. 
 
 Note that these API are not perfect and if you use a better one, please reach out to me and let's talk to improve this tool :) 
 
@@ -51,6 +51,8 @@ with st.expander('STEP 1: Create your local keywords'):
     ''')
     country_data = st.selectbox('Choose the country', data['country'].sort_values().drop_duplicates().tolist())
     modifier = st.text_input('Choose your main keyword (e.g. hotel, restaurant, lawyer...')
+    st.write('Where does the city name must be included? Before or after your keyword?')
+    position = st.selectbox('Choose the right sructure', ['Before (e.g. barcelona hotel)', 'After (e.g. hotel barcelona)'])
 
 
 with st.expander('STEP 2: Configure your extraction'):
@@ -73,7 +75,12 @@ with st.expander('STEP 3: Extract Volume'):
     if st.button('Launch extraction'):
         #prepare keywords for encoding
         cities = data[data['country']==country_data]['city'].str.replace('-',' ')
-        kws = modifier+' '+cities.str.lower().unique()
+
+        if position == 'Before (e.g. barcelona hotel)':
+            kws = cities.str.lower().unique()+' '+modifier
+        else:
+            kws = modifier+' '+cities.str.lower().unique()
+
         #divide kws into chunks of kws
         chunks = [kws[x:x+50] for x in range(0, len(kws), 50)]
         #create dataframe to receive data from API
