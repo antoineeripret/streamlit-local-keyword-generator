@@ -52,7 +52,7 @@ with st.expander('STEP 1: Create your local keywords'):
     country_data = st.selectbox('Choose the country', data['country'].sort_values().drop_duplicates().tolist())
     modifier = st.text_input('Choose your main keyword (e.g. hotel, restaurant, lawyer...')
     st.write('Where does the city name must be included? Before or after your keyword?')
-    position = st.selectbox('Choose the right sructure', ['Before (e.g. barcelona hotel)', 'After (e.g. hotel barcelona)'])
+    position = st.selectbox('Choose the right structure', ['Before (e.g. barcelona hotel)', 'After (e.g. hotel barcelona)'])
 
 
 with st.expander('STEP 2: Configure your extraction'):
